@@ -34,6 +34,7 @@ Tradeoff vs native: we lose replay-safe determinism, the `FLEET_SIZE`-way true c
   - Empty → default to the branch diff `origin/main...HEAD` (fall back to `main...HEAD` if no remote).
   - A path → hunt just that file/dir.
   - A diff range → hunt that range.
+  - On a no-remote repo, passing an explicit diff range or a bare branch name is the recommended input — base auto-resolution falls back to local `main` but an explicit range avoids ambiguity.
 
 ## Tuning constants (verbatim from the built-in)
 
@@ -53,7 +54,7 @@ Discover what to hunt and build a shared context header. Schema `SCOPE_SCHEMA`: 
 
 The scope agent (prompt verbatim intent):
 
-1. **Diff base:** run `git rev-parse origin/main`, fallback to `main`. Return whichever exists. (Skip if scope is an explicit path.)
+1. **Diff base:** run `git rev-parse --verify origin/main 2>/dev/null || git rev-parse --verify main` (no remote → resolves to local `main` without hard-erroring). Return whichever exists. (Skip if scope is an explicit path.)
 2. **Changed files:** `git diff --name-only <diffBase>...HEAD`.
 3. **Summarize** what changed in one paragraph.
 4. **Conventions:** find `CLAUDE.md` files (root + parent dirs of changed files); extract relevant conventions.
@@ -143,7 +144,7 @@ Structured output only.
 (idx === 0 → "the most significant change"; else → "a DIFFERENT subsystem from prior deep passes".)
 
 **Harvest** each finder result (`harvest(result, role)`):
-1. If result is null/failed: if role is `deep`, `dryStreak++`; if `dryStreak >= 3` set `bugFindingDone = true`. Return [] (no novel bugs).
+1. If result is null/failed: if role is `deep`, `dryStreak++` and if `dryStreak >= 3` set `bugFindingDone = true`. Then **return [] immediately** — do NOT fall through to steps 2-4 (the zero-novel check in step 4 would otherwise count this same null deep result a second time, double-incrementing `dryStreak`).
 2. Sort `result.bugs` by `sevRank` (severity-first so high-priority bugs claim budget slots).
 3. For each bug, compute `dedupKey`:
    - If `seen.has(key)` → push to `naiveDupes` (record `finder`, `dupOf`), skip.
@@ -239,7 +240,7 @@ stats: {
   rapidSpawned, deepSpawned, voted,
   confirmed, killed, afterSemanticDedup,
   naiveDupes, budgetDropped,
-  agentCalls: 1 + (rapidSpawned + deepSpawned) + Σ(verdicts per voted bug) + 1,
+  agentCalls: (scope dispatched as a subagent ? 1 : 0) + (rapidSpawned + deepSpawned) + Σ(verdicts per voted bug) + 1,   # leading term is 0 when Phase 0 ran as inline bash; trailing +1 is the synthesis agent
 }
 ```
 
@@ -261,7 +262,7 @@ stats: {
 ...
 
 ## Killed by adversarial jury (optional, for transparency)
-- `file:title` — vote A-B
+- `file` — <title> — vote A-B
 
 **Stats: <rapidSpawned> rapid + <deepSpawned> deep finders · <voted> verified → <confirmed> confirmed, <killed> killed · <afterSemanticDedup> after semantic dedup · <naiveDupes> naive-dupes, <budgetDropped> budget-dropped · ~<agentCalls> agent calls.**
 ```

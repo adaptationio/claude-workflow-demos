@@ -42,15 +42,15 @@ ROOT_CAUSE_SCHEMA required: rootCause(str), culprit(str = "file:line of the mini
 IMPL_SCHEMA       required: done(bool), filesChanged(str[]), notes(str)
                   optional: blockers(str[])
 REGRESS_SCHEMA    required: testPath(str), testPassed(bool), suitePassed(bool), notes(str)
-PR_SCHEMA         required: prUrl(str), branch(str), summary(str)
-                  optional: lintPassed(bool), typecheckPassed(bool), notes(str)
+PR_SCHEMA         required: branch(str), summary(str)
+                  optional: prUrl(str|null — null when no remote is configured), lintPassed(bool), typecheckPassed(bool), notes(str)
 ```
 
 ## Recipe
 
 Five phases, strictly sequential. Each is ONE subagent (`subagent_type: general-purpose` — every phase reads/writes files and runs commands). Gate after each phase; carry the structured result forward.
 
-### Phase 1 — Reproduce (1 subagent, `IMPL_SCHEMA`→`REPRO_SCHEMA`)
+### Phase 1 — Reproduce (1 subagent, `REPRO_SCHEMA`)
 
 `phase('Reproduce')`. Dispatch one agent (label `reproduce`, schema `REPRO_SCHEMA`). Prompt (verbatim intent):
 
@@ -140,6 +140,8 @@ Files changed: <fix.filesChanged joined by ", ">
 1. Convert the repro at <repro.reproPath> into a permanent regression test in the right
    location for this codebase. If it is already a proper test, tighten the assertion and
    naming so it clearly describes the bug it guards against.
+   If the repro was a scratch script (not already a committed test), move its logic into
+   the permanent regression test and delete the scratch file — leave no untracked scratch behind.
 2. Run the regression test — it must PASS.
 3. Run the full test suite for the touched module(s) — flag any new failures.
 Return testPassed and suitePassed honestly.
@@ -169,9 +171,12 @@ NOTE: suite had failures — investigate before merging: <regress.notes>   # onl
 ## Instructions
 1. Run lint and typecheck. Fix any failures.
 2. If on main, create a kebab-case branch from the bug.
-3. Commit with a clear message referencing the symptom and root cause. Push. Open a PR.
-   Include the repro steps and regression test path in the PR body.
-4. Return the PR URL, branch, and a 2-3 sentence summary.
+3. Check for a git remote (`git remote` — empty output means none is configured).
+   - If a remote EXISTS: commit with a clear message referencing the symptom and root cause,
+     push, and open a PR. Include the repro steps and regression test path in the PR body.
+   - If NO remote: skip `git push` and `gh pr create`. Commit locally on the branch, set
+     prUrl=null, and note in the summary "PR step incomplete — no remote; branch + commit are local."
+4. Return prUrl (null if no remote), branch, and a 2-3 sentence summary.
 ```
 
 No hard gate after PR — it's the last phase. If the PR agent returns nothing, fall back to reporting the fix that was applied.

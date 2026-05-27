@@ -113,7 +113,7 @@ If `impl` is missing OR `impl.done === false` → stop with `{ error: 'Implement
 
 Budgets/constants (verbatim): `VOTES = 5`, `REFUTE_KILL = 2`, `MAX_VERIFY = 20`. Severity rank `critical<high<medium<low<nit`. Dedup key = `<file>:<round(line/5)*5>`. Shared diff instruction:
 
-> Run `git diff $(git merge-base HEAD origin/main)` to see all changes (committed + uncommitted). If origin/main doesn't exist, try `main` or `origin/HEAD`.
+> Run `git diff $(git merge-base HEAD $(git rev-parse --verify origin/main 2>/dev/null || git rev-parse --verify main 2>/dev/null || git rev-parse --verify origin/HEAD 2>/dev/null))` to see all changes (committed + uncommitted) — the `2>/dev/null` guards prevent a hard error when a ref is absent. If no base ref resolves or the committed diff is empty, diff the working tree instead (`git diff` and `git diff --staged`) so uncommitted work is reviewed.
 
 Run TWO independent sub-flows TOGETHER (built-in `Promise.all`):
 
@@ -196,7 +196,7 @@ Collect: `voted` = all verified bugs, `confirmed` = those that `survives`, `gaps
 > ## Instructions
 > 1. Run lint and typecheck. Fix any failures.
 > 2. If on main, create a kebab-case branch from the task.
-> 3. Commit with a clear message. Push. Open a PR (use template if present). Assign reviewers based on CODEOWNERS or recent git blame against the base branch for the touched files.
+> 3. Commit with a clear message. Then check `git remote`: if it is empty (no remote configured), skip the push and `gh pr create`, set `prUrl: null`, and return the branch + commit (this routes through the existing 'PR step incomplete' summary path). Otherwise push and open a PR (use template if present), assigning reviewers based on CODEOWNERS or recent git blame against the base branch for the touched files.
 > 4. After the PR is created, enable auto-fix by calling the `mcp__github__subscribe_pr_activity` tool with `{owner, repo, pullNumber}` parsed from the PR URL. This subscribes the session to CI failures and review comments so they can be addressed automatically. Set autoFixSubscribed=true if the call succeeds. If that tool is not available in this environment, skip this step and set autoFixSubscribed=false.
 > 5. Return the PR URL, branch name, autoFixSubscribed, and a 2-3 sentence summary of what changed and why.
 

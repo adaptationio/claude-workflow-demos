@@ -137,7 +137,7 @@ Each hypothesizer prompt = `EVIDENCE_BLOCK` + the angle block + this instruction
 
 ## Instructions
 Propose ONE concrete root-cause hypothesis from this angle. Read the relevant code.
-Explain the mechanism — how this cause produces EVERY observation in the evidence list.
+Explain the mechanism — how this cause produces every observation relevant to the symptom in the evidence list (incidental observations unrelated to the symptom need not be explained).
 List 2-3 testable predictions: things that would be true if and only if this hypothesis holds.
 ```
 

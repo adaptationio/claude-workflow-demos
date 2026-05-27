@@ -40,8 +40,8 @@ The pipeline has 5 phases, each a single `general-purpose` subagent that returns
 ### Phase 1 — Discover
 
 `phase('Discover')`. One subagent. Returns JSON matching `DISCOVER_SCHEMA`:
-`{ dataSources: string[], framework: string, examplePath: string, targetPath: string, conventions?: string }`
-(required: `dataSources`, `framework`, `examplePath`, `targetPath`)
+`{ dataSources: string[], framework: string, examplePath: string|null, targetPath: string, conventions?: string }`
+(required: `dataSources`, `framework`, `targetPath`; `examplePath` may be null)
 
 Prompt (translated from the built-in):
 
@@ -55,6 +55,8 @@ Discover the dashboard stack and available data for this request.
 1. Identify the dashboard framework this repo uses: Grafana-as-code, Hex, Datadog JSON,
    Streamlit, a React page with a charting library, or similar. Grep for existing dashboards.
 2. Find an existing dashboard file to pattern-match against (examplePath).
+   If no dashboard framework or existing dashboard exists (greenfield repo), choose a
+   zero-install stack (e.g. a standalone HTML file + Chart.js via CDN) and set examplePath to null.
 3. List concrete data sources relevant to the request: table names, metric names, API
    endpoints, or log queries. Verify they exist where possible.
 4. Decide where the new dashboard file(s) should live (targetPath) and note conventions.
@@ -117,7 +119,7 @@ Implement block (translated from the built-in):
 Implement the dashboard at <targetPath> using <framework>.
 Match the structure of <examplePath> exactly — same JSON schema, component
 patterns, or DSL. Wire up each panel to its data source.
-Register the dashboard in any index/nav file the framework requires.
+Register the dashboard in any index/nav file the framework requires (no-op for a standalone file).
 ```
 
 If no result OR `done !== true` → stop: `"Implementation incomplete."` (return discover + design + `impl.blockers`).
@@ -178,8 +180,11 @@ Files: <impl.filesChanged>
 
 ## Instructions
 1. Run any repo lint/format on the dashboard files.
-2. Commit, push, open a PR. Include the panel list and screenshot (if any) in the body.
-3. Return PR URL, branch, and a 2-3 sentence summary.
+2. Create a branch (e.g. `dashboard/<subject>`) before committing.
+3. Commit. If no git remote is configured, skip `git push`/`gh pr create`, commit locally,
+   and return `prUrl: null` with a note. Otherwise push and open a PR. Include the panel
+   list and screenshot (if any) in the body.
+4. Return PR URL (or null), branch, and a 2-3 sentence summary.
 ```
 
 ## Output format

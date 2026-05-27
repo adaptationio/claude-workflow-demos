@@ -99,7 +99,12 @@ Build a `CONTEXT` block reused by every planner and judge:
 
 ## Assumptions (made by scope)
 - assumption1            (or "(none)")
+
+## Open questions (from scope)
+- openQuestion1          (or "(none)")
 ```
+
+This carries `scope.assumptions` AND `scope.openQuestions` through to every planner, judge, and the synthesizer — so the synthesize step (which is told to "Open with any assumptions and open questions from scope") actually has them.
 
 ### Phase 1 — Draft (4 planners, dispatched IN PARALLEL)
 
@@ -165,8 +170,8 @@ Structured output only.
 **Aggregate (you do this in-context, mirroring the JS):**
 
 1. For each lens, accumulate `total` score, `votes` count, and `rationales[]` across all valid judges (ignore rankings for unknown lens keys).
-2. `avgScore = votes > 0 ? total / votes : 0`.
-3. Sort drafts by `avgScore` descending. `winner = ranked[0]`, `runnersUp = ranked.slice(1)`.
+2. `avgScore = votes > 0 ? total / votes : 0`. Keep full precision for sorting; round to 1 decimal place only for display.
+3. Sort drafts by `avgScore` descending. Tie-break: higher `votes` count first; if still tied, lens order `mvp > risk > dep > user`. `winner = ranked[0]`, `runnersUp = ranked.slice(1)`.
 4. Log: `Winner: <winner.label> (avg <winner.avgScore>/10)`.
 
 ### Phase 3 — Synthesize (1 subagent)
@@ -209,11 +214,11 @@ Print the synthesized plan as the primary deliverable, then a short run footer:
 
 ---
 **Winner: <label> (<avgScore>/10)**
-Scoreboard: mvp <x>/10 · risk <x>/10 · dep <x>/10 · user <x>/10
+Scoreboard: one `<lens> <avgScore>/10` entry per SURVIVING draft, joined by ` · ` (do NOT hardcode all four lenses — drafts can be filtered/dropped). E.g. `mvp 8.5/10 · risk 7.0/10 · user 6.5/10`.
 Stats: <D> drafts, <J> judges, <agentCalls> agent calls.
 ```
 
-Where `agentCalls = 1 (scope) + D (drafts) + J (judges) + 1 (synthesize)`.
+Where `agentCalls = 1 (scope) + D (drafts) + J (judges) + 1 (synthesize)`. All `<avgScore>` values are displayed rounded to 1 decimal place.
 
 ## Notes
 

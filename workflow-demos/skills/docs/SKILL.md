@@ -62,8 +62,8 @@ VERIFY_SCHEMA  (required: examplesOk, linksOk, accurate, issues)
   accurate:   boolean
   issues:     string[]
 
-PR_SCHEMA  (required: prUrl, branch, summary)
-  prUrl:   string
+PR_SCHEMA  (required: branch, summary)
+  prUrl:   string | null   // optional; null when no git remote is configured
   branch:  string
   summary: string
   notes:   string   // optional
@@ -197,9 +197,15 @@ Open a PR for this documentation change.
 Files: <filesChanged joined by ", ">
 
 ## Instructions
-1. Run lint/format on the doc files if the repo has a docs linter.
-2. Commit, push, open a PR. Summarize what was documented and why.
-3. Return PR URL, branch, and a 2-3 sentence summary.
+1. Create a `docs/<subject>` branch (kebab-case) and switch to it before committing — never
+   commit docs onto the current branch (you can't open a PR from main→main).
+2. Run lint/format on the doc files if the repo has a docs linter.
+3. Check for a git remote (`git remote` — empty output means none is configured).
+   - If a remote EXISTS: commit, push, and open a PR. Summarize what was documented and why.
+   - If NO remote: skip `git push` and `gh pr create`. Commit locally on the new branch, set
+     prUrl=null, and note the manual push step in the summary
+     ("PR step incomplete — no remote; commit is local on branch `docs/<subject>`, push manually").
+4. Return prUrl (null if no remote), branch, and a 2-3 sentence summary.
 ```
 
 ## Output format

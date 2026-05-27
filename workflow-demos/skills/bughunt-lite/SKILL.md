@@ -29,9 +29,10 @@ Tradeoff vs native: we lose replay-safe determinism and the `/workflows` run-his
 ## Inputs
 
 - **scope** (optional): a path (`src/foo.ts`), a git diff range (`HEAD~3...HEAD`), or empty.
-  - Empty → default to the branch diff base: `git rev-parse origin/main` → fallback `main`, reviewed as `<base>...HEAD`.
+  - Empty → default to the branch diff base: `git rev-parse --verify origin/main 2>/dev/null || git rev-parse --verify main`, reviewed as `<base>...HEAD`.
   - A path → hunt just that file/dir.
   - A diff range → hunt that range.
+  - On a no-remote repo, passing an explicit diff range (`HEAD~3...HEAD`) or a bare branch name is the recommended input — base auto-resolution falls back to local `main` but an explicit range avoids any ambiguity.
 
 ## Constants (verbatim from the built-in)
 
@@ -48,7 +49,7 @@ Severity rank for budget/sort: `critical(0) < high(1) < medium(2) < low(3) < nit
 - **SCOPE_SCHEMA** — `{ diffBase: string, files: string[], summary: string, conventions?: string }` (required: diffBase, files, summary).
 - **BUGS_SCHEMA** — `{ bugs: [ { file: string, line?: number, title: string, description: string, severity: critical|high|medium|low|nit, category?: logic|security|performance|convention|correctness|resource-leak|race|other } ] }` (required per bug: file, title, description, severity).
 - **VERDICT_SCHEMA** — `{ refuted: boolean, evidence: string, confidence: high|medium|low, severity?: critical|high|medium|low|nit }` (required: refuted, evidence, confidence).
-- **REPORT_SCHEMA** — `{ summary: string, bugs: [ { file, line?, title, description, severity, vote: string, evidence: string } ] }` (required per bug: file, title, description, severity, vote, evidence).
+- **REPORT_SCHEMA** — `{ summary: string, bugs: [ { file, line?, title, description, severity, vote: string, evidence: string, finder?: string } ] }` (required per bug: file, title, description, severity, vote, evidence). `finder` = finder id (optional).
 
 ## Recipe
 
@@ -56,7 +57,7 @@ Severity rank for budget/sort: `critical(0) < high(1) < medium(2) < low(3) < nit
 
 Discover the scope of changes on the current branch for a bug hunt. Return SCOPE_SCHEMA only.
 
-1. Diff base: `git rev-parse origin/main`, fallback to `main`. (Skip if scope is an explicit path/range.)
+1. Diff base: `git rev-parse --verify origin/main 2>/dev/null || git rev-parse --verify main` (no remote → resolves to local `main` without hard-erroring). (Skip if scope is an explicit path/range.)
 2. Changed files: `git diff --name-only <diffBase>...HEAD`.
 3. Summarize what changed in one paragraph.
 4. Find CLAUDE.md files (root + parent dirs of changed files) and extract relevant conventions (empty string if none).
@@ -109,6 +110,8 @@ Each finder prompt = `SCOPE_BLOCK` + the role block below.
 > Invariant violations · Races · State mutation · Edge cases (empty/null/concurrent)
 > Pick [idx 0: the most significant change | idx 1: a DIFFERENT subsystem]. Go DEEP. 1-3 findings.
 > Structured output only.
+
+> **Note (executor):** `idx+1/3`, `idx+1/2`, `[first third / middle third / last third][idx]`, and `[idx 0: … | idx 1: …]` above are TEMPLATES — interpolate the concrete `idx` value (e.g. rapid idx 0 → "Rapid Surface Scanner (1/3)" biased to the "first third"). Do NOT emit `idx` verbatim into the finder prompt.
 
 ### Phase 1.5 — Harvest + naive dedup (inline, as finders land)
 

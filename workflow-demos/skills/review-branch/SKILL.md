@@ -30,16 +30,17 @@ Tradeoff vs native: we lose replay-safe determinism and the `/workflows` run-his
   - Empty → default to the branch diff `origin/main...HEAD` (fall back to `main...HEAD` if no remote).
   - A path → review just that file/dir.
   - A diff range → review that range.
+- **branch** (optional): an explicit branch to review (e.g. `feature/x`). Defaults to `HEAD` (the checked-out branch). Pass this when reviewing a branch you have NOT checked out — the range is resolved as `<base>...<branch>` so the diff is non-empty.
 
 ## Recipe
 
 ### Phase 0 — Scope (1 subagent OR inline bash)
 
-Determine what to review and build a shared context header.
+Determine what to review and build a shared context header. `<branch>` is the reviewed branch (defaults to `HEAD`); `<base>...<branch>` is the diff range.
 
-1. Resolve diff base: `git rev-parse origin/main` → fallback `main`. (Skip if scope is an explicit path.)
-2. File list: `git diff <base>...HEAD --name-only` (or `ls`/`git ls-files` for an explicit path).
-3. Stats: `git diff <base>...HEAD --stat`.
+1. Resolve diff base: `git rev-parse --verify origin/main 2>/dev/null || git rev-parse --verify main` (no remote → still resolves to `main`, no hard error). (Skip if scope is an explicit path.)
+2. File list: `git diff <base>...<branch> --name-only` (or `ls`/`git ls-files` for an explicit path).
+3. Stats: `git diff <base>...<branch> --stat`.
 4. Read project-root `CLAUDE.md` if present; extract a <500-word summary of conventions/patterns/rules (empty string if none).
 5. If zero files changed → stop: "No changes to review."
 
@@ -62,7 +63,7 @@ Build a `CONTEXT_HEADER` string reused by every reviewer/verifier:
 
 Dispatch all 6 in a SINGLE message (6 Agent calls). Each reviews ONE dimension only. `subagent_type: general-purpose`. Each MUST return strict JSON: `{ "findings": [ {file, line, severity, title, description, suggestion}, ... ] }` where `severity ∈ {high, medium, low}`. Empty findings is valid.
 
-Each reviewer prompt = `CONTEXT_HEADER` + the role block below. Reviewers run `git diff <base>...HEAD` (or read the scoped path) themselves.
+Each reviewer prompt = `CONTEXT_HEADER` + the role block below. Reviewers run `git diff <base>...<branch>` (or read the scoped path) themselves.
 
 The 6 dimensions (focus text lifted verbatim from the built-in):
 
@@ -99,7 +100,9 @@ Their reasoning: <description>
 Their suggested fix: <suggestion>
 
 Your task:
-1. Read <file> around line <line> (and `git diff <base>...HEAD -- <file>`).
+1. Read <file> around line <line> (and `git diff <base>...<branch> -- <file>`).
+   When reviewing a <branch> other than the working tree, read the REVIEWED version
+   with `git show <branch>:<file>` — the on-disk file may differ from what's reviewed.
 2. Try HARD to find a reason this is NOT a real issue:
    - Is there code elsewhere that handles this case?
    - Is this intentional behavior (check comments, git blame, related tests)?
@@ -141,7 +144,7 @@ investigation, return 'unclear' — do NOT default to 'confirmed'.
 
 ## Notes
 
-- For read-only review, `subagent_type: Explore` is cheaper; for verify steps that may need git blame, `general-purpose` is fine.
+- Reviewers and verifiers use `subagent_type: general-purpose` (Phase 1) — verify steps may need git blame, so `general-purpose` is the right fit throughout.
 - Keep reviewers scoped to ONE dimension — overlap is handled by the dedup step, not by broad reviewers.
 - The adversarial verifier is the load-bearing part. Do not skip it; it is what makes the output trustworthy.
 - Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.

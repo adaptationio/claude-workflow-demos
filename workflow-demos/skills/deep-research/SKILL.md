@@ -61,8 +61,8 @@ Decompose this research question into complementary search angles.
 <QUESTION>
 
 ## Task
-Generate 5 distinct web search queries that together cover the question from
-different angles. Pick angles that suit the question's domain. Examples:
+Generate 3–6 distinct web search queries (5 is typical) that together cover the
+question from different angles. Pick angles that suit the question's domain. Examples:
 - broad/primary · academic/technical · recent news · contrarian/skeptical · practitioner/implementation
 - For medical: anatomy · common causes · serious differentials · authoritative refs · red flags
 - For tech: state-of-art · benchmarks · limitations · industry adoption · cost/tradeoffs
@@ -179,7 +179,7 @@ Default to refuted=true if uncertain.
 Structured output only. Evidence MUST cite a source.
 ```
 
-Tally per claim: `survives = refutedVotes < 2`. Split into `confirmed` (survives) and `killed`.
+Tally per claim: `survives = refutedVotes < 2`. Split into `confirmed` (survives) and `killed`. Render the vote (shown later as `confirm-refute`) as `(totalVotes − refutedVotes)-(refutedVotes)` — e.g. 3 votes with 0 refutations → `3-0`, with 1 refutation → `2-1`.
 
 `log`: `Voting done: V voted → C confirmed, K killed`.
 
