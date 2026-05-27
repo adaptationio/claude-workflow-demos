@@ -1,7 +1,7 @@
 {
   "name": "team-willie",
   "owner": {
-    "name": "Adaptation AI — Team Willie"
+    "name": "Adaptation AI \u2014 Team Willie"
   },
   "metadata": {
     "description": "Team Willie local plugin marketplace (Adaptation AI)."
@@ -10,9 +10,15 @@
     {
       "name": "workflow-demos",
       "source": "./workflow-demos",
-      "version": "0.1.0",
-      "description": "Subagent recreations of all 10 Claude Code built-in workflows as skills + /<name>-demo slash commands. A demo/preview of the upcoming native /workflows feature — works today via ungated Agent/Task subagents.",
-      "keywords": ["workflows", "workflow-demo", "subagents", "orchestration", "preview"]
+      "version": "0.2.0",
+      "description": "Subagent recreations of all 10 Claude Code built-in workflows as skills + /<name>-demo slash commands. A demo/preview of the upcoming native /workflows feature \u2014 works today via ungated Agent/Task subagents.",
+      "keywords": [
+        "workflows",
+        "workflow-demo",
+        "subagents",
+        "orchestration",
+        "preview"
+      ]
     }
   ]
 }

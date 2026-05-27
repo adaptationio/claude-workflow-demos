@@ -1,7 +1,7 @@
 # review-branch — test run report
 
 **Date:** 2026-05-25
-**Scope:** `clawd/skills/review-branch/test/fixture.js` (35-line JS fixture with planted issues)
+**Scope:** `${CLAUDE_PLUGIN_ROOT}/skills/review-branch/test/fixture.js` (35-line JS fixture with planted issues)
 **Pipeline:** Phase 0 scope → Phase 1 (6 parallel reviewers) → Phase 2 (adversarial verify) → Phase 3 (synthesis)
 **Result:** PASS — all planted issues caught + confirmed; zero false positives; zero hallucinated findings.
 

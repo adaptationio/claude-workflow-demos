@@ -10,7 +10,7 @@ Run the **review-branch** skill recipe.
 
 **Steps:**
 
-1. Read the full recipe at `clawd/skills/review-branch/SKILL.md`.
+1. Read the full recipe at `${CLAUDE_PLUGIN_ROOT}/skills/review-branch/SKILL.md`.
 2. Execute it end-to-end:
    - **Phase 0 — Scope:** resolve the diff base / scope, list changed files, gather `--stat`, read CLAUDE.md conventions, build the shared `CONTEXT_HEADER`. Stop early if there is nothing to review.
    - **Phase 1 — Review:** dispatch the 6 dimension reviewers (bugs, simplicity, architecture, dead-code, best-practices, existing-patterns) IN PARALLEL via the Agent tool, each returning strict JSON findings.
@@ -18,4 +18,4 @@ Run the **review-branch** skill recipe.
    - **Phase 3 — Synthesize:** semantically dedup confirmed findings, group by severity, and emit the report in the skill's output format.
 3. Print the final severity-grouped report. Do not modify any code — this is review-only.
 
-Note: this is the subagent-based recreation; the native `Workflow` tool is gated off fleet-wide (`tengu_workflows_enabled` OFF). See `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`.
+Note: this is the subagent-based recreation; the native `Workflow` tool is gated off in your org (`tengu_workflows_enabled` OFF).

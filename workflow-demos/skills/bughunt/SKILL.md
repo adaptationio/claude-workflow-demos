@@ -1,17 +1,17 @@
 ---
 name: bughunt
-description: Adversarial bug hunt over a branch diff (or a specified path/diff-range). Runs a self-respawning finder fleet (rapid surface scanners + deep analysts) that dispatches bug candidates the moment they're found, verifies each candidate with a 5-vote pigeonhole adversarial jury (≥2 refutations kill it), and synthesizes a semantically-deduped, severity-ranked report. Terminates on a deep-finder dry streak. Use for "hunt for bugs", "find bugs in my branch", "bug hunt", "adversarial bug review", or the /bughunt-demo slash command. Faithful recreation of the Claude Code built-in `bughunt` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled is OFF fleet-wide).
+description: Adversarial bug hunt over a branch diff (or a specified path/diff-range). Runs a self-respawning finder fleet (rapid surface scanners + deep analysts) that dispatches bug candidates the moment they're found, verifies each candidate with a 5-vote pigeonhole adversarial jury (≥2 refutations kill it), and synthesizes a semantically-deduped, severity-ranked report. Terminates on a deep-finder dry streak. Use for "hunt for bugs", "find bugs in my branch", "bug hunt", "adversarial bug review", or the /bughunt-demo slash command. Faithful recreation of the Claude Code built-in `bughunt` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled may be gated off in your org).
 ---
 
 # bughunt (skill)
 
 ## Purpose
 
-Hunt for **real, reachable, new** bugs in a set of changes with a very low false-positive rate. This is a recreation of Claude Code's built-in `bughunt` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even though the native `Workflow` tool is gated off (`tengu_workflows_enabled` is OFF for all our Anthropic orgs — see `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`).
+Hunt for **real, reachable, new** bugs in a set of changes with a very low false-positive rate. This is a recreation of Claude Code's built-in `bughunt` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even when the native `Workflow` tool is unavailable (e.g. the `tengu_workflows_enabled` flag is off in your org).
 
 Unlike `review-branch` (a fixed 6-dimension review), `bughunt` is **dynamic**: a fleet of finders self-respawns, biasing breadth early (rapid scanners) and depth later (deep analysts), and stops itself once deep passes go dry. Every surviving candidate then faces a 5-vote adversarial jury whose job is to **refute**.
 
-Source of truth for the recipe: `wiki/concepts/cache/claude-code-workflows-builtin/bughunt.js`.
+Faithfully translated from Claude Code's built-in workflow recipe.
 
 ## Why it works without the Workflow tool
 
@@ -274,4 +274,4 @@ stats: {
 - **Dry-streak is the stop signal**, not a fixed count: deep analysts run until 3 consecutive passes find nothing novel. Rapid scanners are capped at 3 (one per file-list third).
 - Budget (`MAX_VERIFY=20`) protects you from a flood of low-severity candidates; critical/high always bypass it. Sort by severity before spending slots.
 - For read-only hunts, `subagent_type: Explore` is cheaper for finders/verifiers; use `general-purpose` where git blame/history is needed.
-- Provenance + the other 9 built-ins: `wiki/concepts/cache/claude-code-workflows-builtin/bughunt.js`, concept page [[claude-code-workflows]], cheatsheet [[workflows-and-goals-cheatsheet]].
+- Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.

@@ -1,8 +1,8 @@
 # bughunt-lite — test run report
 
 **Date:** 2026-05-25
-**Scope:** `clawd/skills/review-branch/test/fixture.js` (shared planted-bug fixture)
-**Method:** subagents read `clawd/skills/bughunt-lite/SKILL.md` and executed their roles (authentic "is the skill followable?" test).
+**Scope:** `${CLAUDE_PLUGIN_ROOT}/skills/review-branch/test/fixture.js` (shared planted-bug fixture)
+**Method:** subagents read `${CLAUDE_PLUGIN_ROOT}/skills/bughunt-lite/SKILL.md` and executed their roles (authentic "is the skill followable?" test).
 **Result:** PASS — finders caught all planted issues; adversarial jury correctly *discriminated* (confirmed real, killed bogus).
 
 ## Find phase (rapid + deep finders)

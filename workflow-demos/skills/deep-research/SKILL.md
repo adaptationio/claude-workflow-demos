@@ -1,17 +1,17 @@
 ---
 name: deep-research
-description: Multi-angle web research that decomposes a question into search angles, fetches and extracts claims from the best sources, then adversarially verifies each claim with a 3-vote majority before synthesizing a confidence-graded report. Dispatches a Scope agent, parallel angle-searchers, a URL-dedup + fetch/extract pipeline, 3 adversarial verifier votes per claim, and a final synthesizer. Use for "research X", "deep dive on X", "what's the evidence for X", "investigate this question", or the /deep-research-demo slash command. Faithful recreation of the Claude Code built-in `deep-research` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled is OFF fleet-wide).
+description: Multi-angle web research that decomposes a question into search angles, fetches and extracts claims from the best sources, then adversarially verifies each claim with a 3-vote majority before synthesizing a confidence-graded report. Dispatches a Scope agent, parallel angle-searchers, a URL-dedup + fetch/extract pipeline, 3 adversarial verifier votes per claim, and a final synthesizer. Use for "research X", "deep dive on X", "what's the evidence for X", "investigate this question", or the /deep-research-demo slash command. Faithful recreation of the Claude Code built-in `deep-research` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled may be gated off in your org).
 ---
 
 # deep-research (skill)
 
 ## Purpose
 
-Answer an open research question with high-signal, source-cited findings whose central claims have survived adversarial scrutiny. This is a recreation of Claude Code's built-in `deep-research` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even though the native `Workflow` tool is gated off (`tengu_workflows_enabled` is OFF for all our Anthropic orgs — see `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`).
+Answer an open research question with high-signal, source-cited findings whose central claims have survived adversarial scrutiny. This is a recreation of Claude Code's built-in `deep-research` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even when the native `Workflow` tool is unavailable (e.g. the `tengu_workflows_enabled` flag is off in your org).
 
 The built-in is itself ported from the bughunter architecture, swapping `git`/`grep` for `WebSearch`/`WebFetch`: a fan-out of finders, a budget-capped adversarial verify stage, then a semantic-dedup synthesizer.
 
-Source of truth for the recipe: `wiki/concepts/cache/claude-code-workflows-builtin/deep-research.js`.
+Faithfully translated from Claude Code's built-in workflow recipe.
 
 ## Why it works without the Workflow tool
 
@@ -248,4 +248,4 @@ Structured output only.
 - The built-in auto-respawns finder slots and overlaps find/verify with no barrier; the subagent version stages them (search → dedup → fetch → verify → synthesize). Same logic, slightly more sequential.
 - Use `general-purpose` subagents (they need `WebSearch`/`WebFetch`); scope/synthesis can run inline if you prefer fewer dispatches.
 - This is research-only — produce a report, change no files.
-- Provenance + the other 9 built-ins: `wiki/concepts/cache/claude-code-workflows-builtin/` (note: the cached `deep-research.js` is truncated mid-`SEARCH_PROMPT`; the pipeline/verify/synthesize stages here are reconstructed from its header comment + schemas + the bughunter `bughunt.js` it was ported from). Concept page [[claude-code-workflows]], cheatsheet [[workflows-and-goals-cheatsheet]].
+- Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.

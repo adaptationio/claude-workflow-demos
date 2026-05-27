@@ -1,17 +1,17 @@
 ---
 name: investigate
-description: Structured root-cause investigation of an incident, error, bug, or "why is X happening" question. Gathers evidence first (no theorizing), then generates 3 competing hypotheses in PARALLEL from distinct angles (recent-change, data-edge-case, infra-timing), runs an adversarial refutation pass per hypothesis to kill the ones that don't fit the evidence, then synthesizes a root-cause report with a concrete fix and confidence level. Use for "investigate this error", "why is this failing", "root cause this incident", "debug X", or the /investigate-demo slash command. Faithful recreation of the Claude Code built-in `investigate` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled is OFF fleet-wide).
+description: Structured root-cause investigation of an incident, error, bug, or "why is X happening" question. Gathers evidence first (no theorizing), then generates 3 competing hypotheses in PARALLEL from distinct angles (recent-change, data-edge-case, infra-timing), runs an adversarial refutation pass per hypothesis to kill the ones that don't fit the evidence, then synthesizes a root-cause report with a concrete fix and confidence level. Use for "investigate this error", "why is this failing", "root cause this incident", "debug X", or the /investigate-demo slash command. Faithful recreation of the Claude Code built-in `investigate` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled may be gated off in your org).
 ---
 
 # investigate (skill)
 
 ## Purpose
 
-Run a disciplined, evidence-first root-cause investigation over an incident, error, failing test, or "why is X happening" question. This is a recreation of Claude Code's built-in `investigate` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even though the native `Workflow` tool is gated off (`tengu_workflows_enabled` is OFF for all our Anthropic orgs — see `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`).
+Run a disciplined, evidence-first root-cause investigation over an incident, error, failing test, or "why is X happening" question. This is a recreation of Claude Code's built-in `investigate` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even when the native `Workflow` tool is unavailable (e.g. the `tengu_workflows_enabled` flag is off in your org).
 
 The method is the load-bearing part: separate **observation** from **theory**, generate **competing** hypotheses, then **try to refute** them rather than confirm a favorite. Surviving hypotheses earn the root-cause claim.
 
-Source of truth for the recipe: `wiki/concepts/cache/claude-code-workflows-builtin/investigate.js`.
+Faithfully translated from Claude Code's built-in workflow recipe.
 
 ## Why it works without the Workflow tool
 
@@ -240,4 +240,4 @@ Render the final `REPORT_SCHEMA` object as Markdown:
 - The 3 angles are fixed and complementary on purpose (code vs data vs infra). Don't collapse them or add a 4th — the built-in uses exactly these three.
 - The refutation pass is the load-bearing part. A hypothesis that "sounds right" but survives no adversarial check is worthless. Default to `refuted=true` when a prediction fails; only `refuted=false` when every prediction holds.
 - For read-heavy gather/refute work, `subagent_type: Explore` is cheaper; use `general-purpose` where git blame or broader code reading is needed.
-- Provenance + the other 9 built-ins: cached `.js` at `wiki/concepts/cache/claude-code-workflows-builtin/investigate.js`, concept page [[claude-code-workflows]], cheatsheet [[workflows-and-goals-cheatsheet]].
+- Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.

@@ -1,17 +1,17 @@
 ---
 name: bugfix
-description: End-to-end single-bug fix loop driven from a bug report (Reproduce → Root-cause → Fix → Regress → PR). Dispatches a strictly sequential chain of 5 subagents — write the smallest failing repro, trace to the minimal root cause, apply the minimal fix and re-run the repro, harden the repro into a permanent regression test and run the suite, then lint/typecheck/branch/commit/push and open a PR. Hard-gates between phases (no repro → stop; fix not done → stop). Use for "fix this bug", "reproduce and fix", "here's a bug report — fix it", or the /bugfix-demo slash command. MODIFIES code. Faithful recreation of the Claude Code built-in `bugfix` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled is OFF fleet-wide).
+description: End-to-end single-bug fix loop driven from a bug report (Reproduce → Root-cause → Fix → Regress → PR). Dispatches a strictly sequential chain of 5 subagents — write the smallest failing repro, trace to the minimal root cause, apply the minimal fix and re-run the repro, harden the repro into a permanent regression test and run the suite, then lint/typecheck/branch/commit/push and open a PR. Hard-gates between phases (no repro → stop; fix not done → stop). Use for "fix this bug", "reproduce and fix", "here's a bug report — fix it", or the /bugfix-demo slash command. MODIFIES code. Faithful recreation of the Claude Code built-in `bugfix` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled may be gated off in your org).
 ---
 
 # bugfix (skill)
 
 ## Purpose
 
-Take a single bug report and drive it all the way to an opened PR: reproduce it with a failing test, find the real root cause (not the first symptom), apply the minimal fix, lock it in with a permanent regression test, and ship a clean PR. This is a recreation of Claude Code's built-in `bugfix` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even though the native `Workflow` tool is gated off (`tengu_workflows_enabled` is OFF for all our Anthropic orgs — see `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`).
+Take a single bug report and drive it all the way to an opened PR: reproduce it with a failing test, find the real root cause (not the first symptom), apply the minimal fix, lock it in with a permanent regression test, and ship a clean PR. This is a recreation of Claude Code's built-in `bugfix` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even when the native `Workflow` tool is unavailable (e.g. the `tengu_workflows_enabled` flag is off in your org).
 
 Unlike `review-branch` / `bughunt` (read-only fan-out reviews), `bugfix` is a **linear build pipeline that MODIFIES code and opens a PR**. It is the autopilot family: each phase is a single subagent, run strictly in order, with hard gates between phases — a failed reproduce, an incomplete fix, or a skipped phase short-circuits the whole run.
 
-Source of truth for the recipe: `wiki/concepts/cache/claude-code-workflows-builtin/bugfix.js`.
+Faithfully translated from Claude Code's built-in workflow recipe.
 
 ## Why it works without the Workflow tool
 
@@ -228,4 +228,4 @@ If an early gate fired, emit only the phases that ran plus the stop reason (e.g.
 - **`suitePassed === false` is a warning, not a stop** — it flows into the PR body so a human investigates failing neighbours before merge; the PR still opens.
 - This workflow MODIFIES code and git state (Phases 3–5: edits, branch, commit, push, PR). Run it on a branch you can push, on a bug you actually want fixed. Contrast with `/review-branch-demo` and `/bughunt-demo`, which are read-only.
 - All phases use `subagent_type: general-purpose` — every phase runs commands and/or edits files; `Explore` is too narrow.
-- Provenance + the other 9 built-ins: `wiki/concepts/cache/claude-code-workflows-builtin/bugfix.js`, concept page [[claude-code-workflows]], cheatsheet [[workflows-and-goals-cheatsheet]].
+- Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.

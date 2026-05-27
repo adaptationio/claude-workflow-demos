@@ -10,7 +10,7 @@ Run the **deep-research** skill recipe.
 
 **Steps:**
 
-1. Read the full recipe at `clawd/skills/deep-research/SKILL.md`.
+1. Read the full recipe at `${CLAUDE_PLUGIN_ROOT}/skills/deep-research/SKILL.md`.
 2. Execute it end-to-end:
    - **Phase 0 — Scope:** dispatch ONE agent to decompose the question into 3–6 complementary search angles (`SCOPE_SCHEMA`).
    - **Phase 1 — Search:** dispatch one searcher per angle IN PARALLEL via the Agent tool, each returning up to 6 ranked results (`SEARCH_SCHEMA`).
@@ -20,4 +20,4 @@ Run the **deep-research** skill recipe.
    - **Phase 4 — Synthesize:** semantically dedup confirmed claims, grade confidence, and emit the report in the skill's output format (`REPORT_SCHEMA`).
 3. Print the final confidence-graded, source-cited research report. Do not modify any files — this is research-only.
 
-Note: this is the subagent-based recreation; the native `Workflow` tool is gated off fleet-wide (`tengu_workflows_enabled` OFF). See `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`.
+Note: this is the subagent-based recreation; the native `Workflow` tool is gated off in your org (`tengu_workflows_enabled` OFF).

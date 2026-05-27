@@ -1,10 +1,20 @@
 {
   "name": "workflow-demos",
-  "description": "Subagent recreations of all 10 Claude Code built-in workflows (autopilot, bugfix, bughunt, bughunt-lite, dashboard, deep-research, docs, investigate, plan-hunter, review-branch) — packaged as skills + /<name>-demo slash commands. A DEMO/preview of the upcoming native /workflows feature: works today using ungated Agent/Task subagents, for testing the ideas until /workflows is fully enabled.",
-  "version": "0.1.0",
+  "description": "Subagent recreations of all 10 Claude Code built-in workflows (autopilot, bugfix, bughunt, bughunt-lite, dashboard, deep-research, docs, investigate, plan-hunter, review-branch) \u2014 packaged as skills + /<name>-demo slash commands. A DEMO/preview of the upcoming native /workflows feature: works today using ungated Agent/Task subagents, for testing the ideas until /workflows is fully enabled.",
+  "version": "0.2.0",
   "author": {
-    "name": "Adaptation AI — Team Willie"
+    "name": "Adaptation AI \u2014 Team Willie"
   },
   "license": "MIT",
-  "keywords": ["workflows", "workflow-demo", "subagents", "orchestration", "code-review", "bughunt", "deep-research", "plan-hunter", "preview"]
+  "keywords": [
+    "workflows",
+    "workflow-demo",
+    "subagents",
+    "orchestration",
+    "code-review",
+    "bughunt",
+    "deep-research",
+    "plan-hunter",
+    "preview"
+  ]
 }

@@ -10,7 +10,7 @@ Run the **bughunt-lite** skill recipe.
 
 **Steps:**
 
-1. Read the full recipe at `clawd/skills/bughunt-lite/SKILL.md`.
+1. Read the full recipe at `${CLAUDE_PLUGIN_ROOT}/skills/bughunt-lite/SKILL.md`.
 2. Execute it end-to-end:
    - **Phase 0 — Scope:** resolve the diff base / scope, list changed files, summarize the change, extract CLAUDE.md conventions, build the shared `SCOPE_BLOCK`. Stop early if there is nothing to hunt.
    - **Phase 1 — Find:** dispatch the FIXED fleet of 5 finders IN PARALLEL via the Agent tool — 3 rapid surface scanners (biased to first/middle/last third of files) + 2 deep analysts (most-significant change, then a different subsystem). Each returns strict JSON bugs. Do NOT add a respawn loop — the fixed wave is what makes this "lite".
@@ -19,4 +19,4 @@ Run the **bughunt-lite** skill recipe.
    - **Phase 3 — Synthesize:** semantically dedup the confirmed bugs, order critical→high→medium→low→nit, and emit the report in the skill's output format with vote tallies and best evidence.
 3. Print the final severity-grouped report plus the stats line. Do not modify any code — this is hunt-only.
 
-Note: this is the subagent-based recreation; the native `Workflow` tool is gated off fleet-wide (`tengu_workflows_enabled` OFF). See `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`.
+Note: this is the subagent-based recreation; the native `Workflow` tool is gated off in your org (`tengu_workflows_enabled` OFF).

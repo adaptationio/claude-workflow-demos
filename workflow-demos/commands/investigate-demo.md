@@ -10,7 +10,7 @@ Run the **investigate** skill recipe.
 
 **Steps:**
 
-1. Read the full recipe at `clawd/skills/investigate/SKILL.md`.
+1. Read the full recipe at `${CLAUDE_PLUGIN_ROOT}/skills/investigate/SKILL.md`.
 2. Execute it end-to-end:
    - **Phase 1 — Gather:** dispatch ONE evidence-gathering subagent (facts only, no theory). Return strict JSON `GATHER_SCHEMA`. Build the shared `EVIDENCE_BLOCK`. Stop early if nothing was gathered.
    - **Phase 2 — Hypothesize:** dispatch the 3 fixed-angle hypothesizers (recent-change, data-edge-case, infra-timing) IN PARALLEL via the Agent tool, each proposing ONE root-cause hypothesis with mechanism + testable predictions (JSON `HYPOTHESIS_SCHEMA`).
@@ -18,4 +18,4 @@ Run the **investigate** skill recipe.
    - **Phase 4 — Report:** dispatch ONE report-writer that picks the surviving root cause (or synthesizes a low-confidence one if none survived) and emits summary, root cause, suggested fix, confidence, and next steps (JSON `REPORT_SCHEMA`).
 3. Print the final root-cause report in the skill's output format. Do NOT apply the fix — this is an investigation report only; acting on the fix is a separate human-gated step.
 
-Note: this is the subagent-based recreation; the native `Workflow` tool is gated off fleet-wide (`tengu_workflows_enabled` OFF). See `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`.
+Note: this is the subagent-based recreation; the native `Workflow` tool is gated off in your org (`tengu_workflows_enabled` OFF).

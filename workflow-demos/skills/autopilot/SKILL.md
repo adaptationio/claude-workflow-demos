@@ -1,17 +1,17 @@
 ---
 name: autopilot
-description: 'End-to-end "task → merged PR" build loop driven by subagents. Takes a task description and runs Plan (draft + 5 parallel critics + harden) → Implement → Review (3 rapid + 2 deep bughunters + adversarial verify, parallel with a completeness check) → Fix → PR. Use for "autopilot this", "build this feature end to end", "implement and open a PR for X", "drive this task to a PR", or the /autopilot-demo slash command. Faithful recreation of the Claude Code built-in `autopilot` workflow using subagents — works WITHOUT the gated Workflow tool (`tengu_workflows_enabled` is OFF fleet-wide). NOTE: this MODIFIES code (it is a build workflow, not review-only).'
+description: 'End-to-end "task → merged PR" build loop driven by subagents. Takes a task description and runs Plan (draft + 5 parallel critics + harden) → Implement → Review (3 rapid + 2 deep bughunters + adversarial verify, parallel with a completeness check) → Fix → PR. Use for "autopilot this", "build this feature end to end", "implement and open a PR for X", "drive this task to a PR", or the /autopilot-demo slash command. Faithful recreation of the Claude Code built-in `autopilot` workflow using subagents — works WITHOUT the gated Workflow tool (`tengu_workflows_enabled` may be gated off in your org). NOTE: this MODIFIES code (it is a build workflow, not review-only).'
 ---
 
 # autopilot (skill)
 
 ## Purpose
 
-Drive a single task description all the way from "what to build" to "PR opened" without hand-holding. This is a recreation of Claude Code's built-in `autopilot` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even though the native `Workflow` tool is gated off (`tengu_workflows_enabled` is OFF for all our Anthropic orgs — see `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`).
+Drive a single task description all the way from "what to build" to "PR opened" without hand-holding. This is a recreation of Claude Code's built-in `autopilot` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even when the native `Workflow` tool is unavailable (e.g. the `tengu_workflows_enabled` flag is off in your org).
 
 Unlike `review-branch` (read-only), autopilot **writes code, runs verification, and opens a pull request**. Treat it as a build loop, not an audit.
 
-Source of truth for the recipe: `wiki/concepts/cache/claude-code-workflows-builtin/autopilot.js`.
+Faithfully translated from Claude Code's built-in workflow recipe.
 
 ## Why it works without the Workflow tool
 
@@ -235,4 +235,4 @@ If the PR step is incomplete, `summary` falls back to `'PR step incomplete. ' + 
 - The completeness check runs concurrently with the bughunt because it depends only on the diff-vs-task comparison, not on the bug findings.
 - `mcp__github__subscribe_pr_activity` may not exist in this environment — that is expected; the PR agent should set `autoFixSubscribed=false` and continue.
 - For finder/critic subagents, `subagent_type: general-purpose` (they grep, read files, and may need git). The implement/fix/PR agents must be able to edit and run commands.
-- Provenance + the other 9 built-ins: `wiki/concepts/cache/claude-code-workflows-builtin/autopilot.js`, concept page [[claude-code-workflows]], cheatsheet [[workflows-and-goals-cheatsheet]].
+- Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.

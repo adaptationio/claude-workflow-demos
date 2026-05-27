@@ -1,17 +1,17 @@
 ---
 name: dashboard
-description: Build a working dashboard from a plain-language request by running a 5-phase pipeline — Discover the dashboard stack + data sources, Design the panels, Implement the dashboard file(s), Verify queries render, then open a PR. Each phase is one subagent returning strict JSON. Use for "build a dashboard for X", "make a Grafana/Hex/Streamlit/React dashboard", "add a metrics dashboard", "dashboard the <data>", or the /dashboard-demo slash command. Faithful recreation of the Claude Code built-in `dashboard` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled is OFF fleet-wide). This skill CREATES and commits files.
+description: Build a working dashboard from a plain-language request by running a 5-phase pipeline — Discover the dashboard stack + data sources, Design the panels, Implement the dashboard file(s), Verify queries render, then open a PR. Each phase is one subagent returning strict JSON. Use for "build a dashboard for X", "make a Grafana/Hex/Streamlit/React dashboard", "add a metrics dashboard", "dashboard the <data>", or the /dashboard-demo slash command. Faithful recreation of the Claude Code built-in `dashboard` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled may be gated off in your org). This skill CREATES and commits files.
 ---
 
 # dashboard (skill)
 
 ## Purpose
 
-Turn a plain-language request ("build a dashboard for our error rates") into a real, committed dashboard. This is a recreation of Claude Code's built-in `dashboard` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even though the native `Workflow` tool is gated off (`tengu_workflows_enabled` is OFF for all our Anthropic orgs — see `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`).
+Turn a plain-language request ("build a dashboard for our error rates") into a real, committed dashboard. This is a recreation of Claude Code's built-in `dashboard` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even when the native `Workflow` tool is unavailable (e.g. the `tengu_workflows_enabled` flag is off in your org).
 
 Unlike `review-branch` (read-only, parallel), this workflow is a **sequential pipeline that WRITES code**: it discovers the stack, designs panels, implements the dashboard, verifies it, and opens a PR. It modifies the repo.
 
-Source of truth for the recipe: `wiki/concepts/cache/claude-code-workflows-builtin/dashboard.js`.
+Faithfully translated from Claude Code's built-in workflow recipe.
 
 ## Why it works without the Workflow tool
 
@@ -208,4 +208,4 @@ Return a final object/summary (translated from the built-in's return value):
 - Implementation MUST pattern-match `examplePath` exactly (same JSON schema / component patterns / DSL). The Discover phase earns its keep here — a good `examplePath` is what makes Implement land cleanly.
 - The Verify phase is load-bearing: validate every query/metric against real tables before opening the PR. The optional fix sub-step closes the loop on any issues it finds.
 - `subagent_type: general-purpose` for all phases (they grep, write files, run linters, and open PRs). Verify may render + screenshot via Playwright when the framework supports it.
-- Provenance + the other 9 built-ins: `wiki/concepts/cache/claude-code-workflows-builtin/`, concept page [[claude-code-workflows]], cheatsheet [[workflows-and-goals-cheatsheet]].
+- Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.

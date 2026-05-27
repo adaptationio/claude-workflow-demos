@@ -1,15 +1,15 @@
 ---
 name: review-branch
-description: Multi-dimension adversarial code review of a branch diff (or a specified path/diff-range). Dispatches 6 parallel reviewers (bugs, simplicity, architecture, dead-code, best-practices, existing-patterns), runs an adversarial verifier per finding to kill false positives, then synthesizes a deduped severity-grouped report. Use for "review this branch", "review my changes", "code review before PR", or the /review-branch-demo slash command. Faithful recreation of the Claude Code built-in `review-branch` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled is OFF fleet-wide).
+description: Multi-dimension adversarial code review of a branch diff (or a specified path/diff-range). Dispatches 6 parallel reviewers (bugs, simplicity, architecture, dead-code, best-practices, existing-patterns), runs an adversarial verifier per finding to kill false positives, then synthesizes a deduped severity-grouped report. Use for "review this branch", "review my changes", "code review before PR", or the /review-branch-demo slash command. Faithful recreation of the Claude Code built-in `review-branch` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled may be gated off in your org).
 ---
 
 # review-branch (skill)
 
 ## Purpose
 
-Run a high-signal, low-false-positive code review over a set of changes. This is a recreation of Claude Code's built-in `review-branch` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even though the native `Workflow` tool is gated off (`tengu_workflows_enabled` is OFF for all our Anthropic orgs — see `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`).
+Run a high-signal, low-false-positive code review over a set of changes. This is a recreation of Claude Code's built-in `review-branch` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even when the native `Workflow` tool is unavailable (e.g. the `tengu_workflows_enabled` flag is off in your org).
 
-Source of truth for the recipe: `wiki/concepts/cache/claude-code-workflows-builtin/review-branch.js`.
+Faithfully translated from Claude Code's built-in workflow recipe.
 
 ## Why it works without the Workflow tool
 
@@ -144,4 +144,4 @@ investigation, return 'unclear' — do NOT default to 'confirmed'.
 - For read-only review, `subagent_type: Explore` is cheaper; for verify steps that may need git blame, `general-purpose` is fine.
 - Keep reviewers scoped to ONE dimension — overlap is handled by the dedup step, not by broad reviewers.
 - The adversarial verifier is the load-bearing part. Do not skip it; it is what makes the output trustworthy.
-- Provenance + the other 9 built-ins: `wiki/concepts/cache/claude-code-workflows-builtin/`, concept page [[claude-code-workflows]], cheatsheet [[workflows-and-goals-cheatsheet]].
+- Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.

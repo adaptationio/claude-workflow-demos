@@ -6,7 +6,7 @@
 
 ## What this is
 
-Claude Code v2.1.147 shipped a native **`Workflow` tool** + `/workflows` command with 10 built-in workflows for deterministic multi-agent orchestration. That tool is gated behind a server-side feature flag (`tengu_workflows_enabled`) that is **currently OFF**, so neither the built-in nor custom `.js` workflows can run yet.
+Claude Code v2.1.147 shipped a native **`Workflow` tool** + `/workflows` command with 10 built-in workflows for deterministic multi-agent orchestration. That tool is gated behind a server-side feature flag (`tengu_workflows_enabled`) that **may not be enabled for your org yet** — until it is, neither the built-in nor custom `.js` workflows can run.
 
 A workflow, though, is just an **orchestration recipe** — phases of parallel agent fan-out, adversarial verification, and synthesis. The *Workflow tool* is gated, but the **Agent/Task subagent tools are not**. So this plugin recreates each built-in recipe as a **skill** (read-and-follow `SKILL.md`) plus a **`/<name>-demo` slash command** that drives the same logic through ordinary subagents — working **today**.
 
@@ -47,7 +47,7 @@ Commands marked ⚠ modify or create files — run them on a clean branch and re
 ## Install
 
 ```
-claude plugin marketplace add /path/to/team_willie/clawd/plugins
+claude plugin marketplace add adaptationio/claude-workflow-demos
 claude plugin install workflow-demos@team-willie
 ```
 
@@ -55,7 +55,7 @@ Then invoke any `/<name>-demo` command, or just ask Claude to "use the bughunt-l
 
 ## Provenance
 
-Recipes translated from the built-in workflow sources cached at `wiki/concepts/cache/claude-code-workflows-builtin/*.js`. Background: `wiki/concepts/claude-code-workflows.md` and `wiki/concepts/workflows-and-goals-cheatsheet.md`.
+Recipes were translated faithfully from Claude Code's built-in workflow sources (the `Workflow` tool's bundled recipes, Claude Code v2.1.147+). Each skill documents its own phases, schemas, and budgets inline — no external files required.
 
 ---
 

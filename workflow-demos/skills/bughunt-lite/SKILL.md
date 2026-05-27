@@ -1,15 +1,15 @@
 ---
 name: bughunt-lite
-description: 'Fast, fixed-fleet bug hunt over a branch diff (or a specified path/diff-range). Dispatches a FIXED fleet of 5 finders (3 rapid surface scanners + 2 deep analysts) in parallel, runs 5-voter adversarial verification per candidate (2 refutations kill a bug; early-kill after the first 2 votes), naively dedups by file:line, then synthesizes a semantically-deduped, severity-grouped report. Lighter and faster than the full `bughunt`: no self-respawning slots, no dry-streak loop, no skip-key feedback — just one fixed wave of finders. Use for "quick bug hunt", "bughunt-lite", "fast bug scan of my branch", "hunt bugs before PR (light)", or the /bughunt-lite-demo slash command. Faithful recreation of the Claude Code built-in `bughunt-lite` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled is OFF fleet-wide).'
+description: 'Fast, fixed-fleet bug hunt over a branch diff (or a specified path/diff-range). Dispatches a FIXED fleet of 5 finders (3 rapid surface scanners + 2 deep analysts) in parallel, runs 5-voter adversarial verification per candidate (2 refutations kill a bug; early-kill after the first 2 votes), naively dedups by file:line, then synthesizes a semantically-deduped, severity-grouped report. Lighter and faster than the full `bughunt`: no self-respawning slots, no dry-streak loop, no skip-key feedback — just one fixed wave of finders. Use for "quick bug hunt", "bughunt-lite", "fast bug scan of my branch", "hunt bugs before PR (light)", or the /bughunt-lite-demo slash command. Faithful recreation of the Claude Code built-in `bughunt-lite` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled may be gated off in your org).'
 ---
 
 # bughunt-lite (skill)
 
 ## Purpose
 
-Run a fast, breadth-first bug hunt over a set of changes and emit only the bugs that survive adversarial verification. This is a recreation of Claude Code's built-in `bughunt-lite` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even though the native `Workflow` tool is gated off (`tengu_workflows_enabled` is OFF for all our Anthropic orgs — see `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`).
+Run a fast, breadth-first bug hunt over a set of changes and emit only the bugs that survive adversarial verification. This is a recreation of Claude Code's built-in `bughunt-lite` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even when the native `Workflow` tool is unavailable (e.g. the `tengu_workflows_enabled` flag is off in your org).
 
-Source of truth for the recipe: `wiki/concepts/cache/claude-code-workflows-builtin/bughunt-lite.js`.
+Faithfully translated from Claude Code's built-in workflow recipe.
 
 **How it differs from `bughunt` (the full version):** `bughunt-lite` dispatches ONE fixed wave of 5 finders (3 rapid + 2 deep) and stops. The full `bughunt` runs self-respawning slots that keep spawning deep analysts (passing already-found locations as skip-keys) until a dry streak of 3 empty deep passes, overlapping find-and-verify with no barrier. Lite trades that adaptive depth for speed and predictable cost. Both share the same schemas, the 5-voter ≥2-refutation verification with 2-vote early-kill, the 20-verification budget, and the semantic-dedup synthesis.
 
@@ -209,4 +209,4 @@ Structured output only.
 - `Explore` subagents are cheaper for read-only finding/verifying; `general-purpose` is fine where git blame/history is needed.
 - The pigeonhole early-kill (2 votes → if both refute, skip 3) is the cost optimization that keeps lite cheap — preserve it.
 - The adversarial verifier is the load-bearing part. Do not skip it; it is what makes the output trustworthy. Default-to-refuted on uncertainty is intentional.
-- Provenance + the other 9 built-ins: `wiki/concepts/cache/claude-code-workflows-builtin/` (this recipe: `bughunt-lite.js`; full version: `bughunt.js`), concept page [[claude-code-workflows]], cheatsheet [[workflows-and-goals-cheatsheet]].
+- Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.

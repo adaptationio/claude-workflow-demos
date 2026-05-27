@@ -1,6 +1,6 @@
 ---
 name: plan-hunter
-description: Generate an implementation plan for an idea by drafting it four ways in parallel (MVP-first, Risk-first, Dependency-first, User-first), having a panel of judges score every draft, then synthesizing the winner with the best grafts from the runners-up. Use for "make me a plan", "plan this feature/project", "how should I build X", "implementation plan for X", or the /plan-hunter-demo slash command. Faithful recreation of the Claude Code built-in `plan-hunter` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled is OFF fleet-wide).
+description: Generate an implementation plan for an idea by drafting it four ways in parallel (MVP-first, Risk-first, Dependency-first, User-first), having a panel of judges score every draft, then synthesizing the winner with the best grafts from the runners-up. Use for "make me a plan", "plan this feature/project", "how should I build X", "implementation plan for X", or the /plan-hunter-demo slash command. Faithful recreation of the Claude Code built-in `plan-hunter` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled may be gated off in your org).
 ---
 
 # plan-hunter (skill)
@@ -11,15 +11,14 @@ Turn a rough idea into a single, act-on-it-now implementation plan — and beat 
 single-shot quality ceiling by **drafting the plan four different ways, judging all
 four, and synthesizing the best of them**. This is a recreation of Claude Code's
 built-in `plan-hunter` workflow, rebuilt with the **Agent/Task subagent tools** so it
-works today even though the native `Workflow` tool is gated off (`tengu_workflows_enabled`
-is OFF for all our Anthropic orgs — see `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`).
+works today even though the native `Workflow` tool is unavailable (e.g. the `tengu_workflows_enabled` flag is off in your org).
 
 The core bet is diversity-then-selection: four planners with deliberately *different*
 priors explore different parts of the plan space, a judge panel ranks them on the same
 rubric, and a synthesizer grafts the best ideas into one plan. Output is a plan, not code
 — this skill never edits files.
 
-Source of truth for the recipe: `wiki/concepts/cache/claude-code-workflows-builtin/plan-hunter.js`.
+Faithfully translated from Claude Code's built-in workflow recipe.
 
 ## Why it works without the Workflow tool
 
@@ -226,4 +225,4 @@ Where `agentCalls = 1 (scope) + D (drafts) + J (judges) + 1 (synthesize)`.
   `autopilot`, which builds.) Hand the synthesized plan to `/autopilot-demo` or a human to execute.
 - For read-heavy scoping of an existing codebase, the scope/planner agents may `subagent_type: Explore`;
   for greenfield ideas `general-purpose` is fine.
-- Provenance + the other 9 built-ins: `wiki/concepts/cache/claude-code-workflows-builtin/`, concept page [[claude-code-workflows]], cheatsheet [[workflows-and-goals-cheatsheet]].
+- Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.

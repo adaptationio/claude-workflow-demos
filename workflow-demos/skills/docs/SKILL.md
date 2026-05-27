@@ -1,17 +1,17 @@
 ---
 name: docs
-description: 'Document a feature, API, or subject end-to-end — discover the public surface, outline, write the docs, verify examples/links, and open a PR. Dispatches a 5-stage subagent pipeline (Discover → Outline → Write → Verify → PR) where Write CREATES/UPDATES documentation files and PR commits + pushes them. Use for "document this", "write docs for X", "add documentation", "update the README/docs for this feature", or the /docs-demo slash command. Faithful recreation of the Claude Code built-in `docs` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled is OFF fleet-wide). NOTE: this skill WRITES files and opens a PR; it is not read-only.'
+description: 'Document a feature, API, or subject end-to-end — discover the public surface, outline, write the docs, verify examples/links, and open a PR. Dispatches a 5-stage subagent pipeline (Discover → Outline → Write → Verify → PR) where Write CREATES/UPDATES documentation files and PR commits + pushes them. Use for "document this", "write docs for X", "add documentation", "update the README/docs for this feature", or the /docs-demo slash command. Faithful recreation of the Claude Code built-in `docs` workflow using subagents — works WITHOUT the gated Workflow tool (tengu_workflows_enabled may be gated off in your org). NOTE: this skill WRITES files and opens a PR; it is not read-only.'
 ---
 
 # docs (skill)
 
 ## Purpose
 
-Produce accurate, convention-matching documentation for a subject the user names — a feature, an API surface, a CLI, a config area — and land it as a PR. This is a recreation of Claude Code's built-in `docs` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even though the native `Workflow` tool is gated off (`tengu_workflows_enabled` is OFF for all our Anthropic orgs — see `wiki/control/runs/2026-05-24-workflows-activation/account-status.md`).
+Produce accurate, convention-matching documentation for a subject the user names — a feature, an API surface, a CLI, a config area — and land it as a PR. This is a recreation of Claude Code's built-in `docs` workflow, rebuilt with the **Agent/Task subagent tools** so it works today even when the native `Workflow` tool is unavailable (e.g. the `tengu_workflows_enabled` flag is off in your org).
 
 Unlike `review-branch` (read-only), this skill **writes and updates documentation files** and opens a PR. Treat it as a build loop for docs.
 
-Source of truth for the recipe: `wiki/concepts/cache/claude-code-workflows-builtin/docs.js`.
+Faithfully translated from Claude Code's built-in workflow recipe.
 
 ## Why it works without the Workflow tool
 
@@ -226,4 +226,4 @@ Return the run summary (mirrors the built-in's return object):
 - **It writes files.** Phase 3 creates/updates docs and may touch nav/index files; Phase 5 commits and pushes. Be on a branch you can push.
 - Each early-return guard (Discover skipped / Outline skipped / Write incomplete) stops the pipeline and reports what was gathered so far — do not push past a failed stage.
 - Code examples must be REAL (copied from working code/tests), and the Verify stage is load-bearing: it actually runs/typechecks examples and resolves links. Do not skip it.
-- Provenance + the other 9 built-ins: cached source `wiki/concepts/cache/claude-code-workflows-builtin/docs.js`, concept page [[claude-code-workflows]], cheatsheet [[workflows-and-goals-cheatsheet]].
+- Provenance: faithfully translated from Claude Code's built-in workflow. This plugin is a demo/preview of the upcoming native `/workflows` feature — it works today via standard Agent/Task subagents.
